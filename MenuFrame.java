@@ -2,7 +2,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import ProcessManagmentFrame.ProcessManagmentFrame;
-
 public class MenuFrame {
     private JFrame frame;
     private JPanel mainPanel;
@@ -73,11 +72,11 @@ public class MenuFrame {
     ActionListener buttonListner=new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Process Management")){
-                new ProcessManagmentFrame();
+                new ProcessManagmentFrame ();
                 frame.dispose();
             }
             else if(e.getActionCommand().equals("Exit")){
-                new ProcessManagmentFrame();
+                new ProcessManagmentFrame ();
                 frame.dispose();
             }
         }
