@@ -298,16 +298,16 @@ public class ProcessManagmentFrame  {
         model.addColumn("Process Status");
 
 
-        int i=0;
-        while(i<3) {
-            Vector<String> row=new Vector<>();
-            row.add(String.valueOf(processes[i].id));
-            row.add(String.valueOf(processes[i].arrivalTime));
-            row.add(String.valueOf(processes[i].burstTime));
-            row.add(String.valueOf(processes[i].status));
+
+        for (Process process:processes) {
+            Vector<String> row = new Vector<>();
+            row.add(String.valueOf(process.id));
+            row.add(String.valueOf(process.arrivalTime));
+            row.add(String.valueOf(process.burstTime));
+            row.add(String.valueOf(process.status));
             model.addRow(row);
-            i++;
         }
+
 
 
 
