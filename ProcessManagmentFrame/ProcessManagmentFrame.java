@@ -31,6 +31,13 @@ public class ProcessManagmentFrame  {
     private int processesInput;
     private int i = 0;
     private JButton next;
+    Process[] processes;
+
+    ///For Suspend Process
+
+    private JLabel suspendInputLabel;
+    private JTextField suspendIDInput;
+    private JButton suspend;
 
     // Process class with ID
     private static class Process {
@@ -38,6 +45,9 @@ public class ProcessManagmentFrame  {
         private int arrivalTime;
         private int burstTime;
         private String status;
+        private String ownerOfProcess;
+        private int priority;
+        private int processor;
 
 
         public Process(int id, int arrivalTime, int burstTime) {
@@ -45,6 +55,9 @@ public class ProcessManagmentFrame  {
             this.arrivalTime = arrivalTime;
             this.burstTime = burstTime;
             this.status="Ready";
+            this.priority=0;
+            this.processor=0;
+            this.ownerOfProcess="null";
 
         }
     }
@@ -191,21 +204,104 @@ public class ProcessManagmentFrame  {
             }
         });
 
+        destroyProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("Destroy"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        resumeProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("Resume"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        blockProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("Block"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        suspendProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("Suspend"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
         return temp;
     }
 
+    ////Suspend Procss
+    private JPanel suspendProcessPanel(String stateChange) {
+        JPanel temp=new JPanel(null);
+
+        suspendInputLabel = new JLabel ("Enter Process Id To "+stateChange+" : ");
+        suspendIDInput = new JTextField (5);
+        suspend = new JButton (stateChange);
+
+        temp.add (suspendInputLabel);
+        temp.add (suspendIDInput);
+        temp.add (suspend);
+
+
+        suspendInputLabel.setBounds (200, 110, 200, 35);
+        suspendIDInput.setBounds (430, 115, 100, 25);
+        suspend.setBounds (295, 175, 125, 30);
+
+        suspend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isSuspended=false;
+                for(Process process : processes){
+                    if(process.id==Integer.parseInt(suspendIDInput.getText())) {
+                        process.status = stateChange;
+                        JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Successfully.",stateChange+" Process",JOptionPane.INFORMATION_MESSAGE);
+                        isSuspended=true;
+                        frame.remove(temp);
+                        frame.add(addContent());
+                        frame.revalidate();
+                        frame.repaint();
+                    }
+                    print();
+                }
+                if(!isSuspended) {
+                    JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Not Successfully . No Process Found",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        return temp;
+
+    }
     void createPCB(){
-        Process[] processes = new Process[processesInput];
+        processes = new Process[processesInput];
         for (int j = 0; j < processesInput; j++) {
             processes[j] = new Process(j + 1, Integer.parseInt(processesArrivalTimeInput[j].getText()),
                     Integer.parseInt(processesBurstTimeInput[j].getText()));
         }
-        for (int j = 0; j < processesInput; j++) {
-            System.out.println(processes[j].id + "Arrival : " + processes[j].arrivalTime+" Burst Time " + processes[j].burstTime );
-        }
+
 
     }
-
+    void print(){
+        for (int j = 0; j < processesInput; j++) {
+            System.out.println(processes[j].id + "Arrival : " + processes[j].arrivalTime+" Burst Time " + processes[j].burstTime+ " Status " + processes[j].status );
+        }
+    }
     public static void main(String[] args) {
         new ProcessManagmentFrame ();
     }
