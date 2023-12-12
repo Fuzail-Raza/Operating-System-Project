@@ -1,9 +1,11 @@
 package ProcessManagmentFrame;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 public class ProcessManagmentFrame  {
 
@@ -18,6 +20,8 @@ public class ProcessManagmentFrame  {
     private JButton changeProcessPriorityButton;
     private JButton dispatchProcessButton;
     private JButton wakeupProcessButton;
+    private JButton displayProcessButton;
+
     private JLabel heading;
 
     // For creating processes
@@ -163,6 +167,7 @@ public class ProcessManagmentFrame  {
         changeProcessPriorityButton = new JButton("Change process Priority");
         dispatchProcessButton = new JButton("Dispatch a Process");
         wakeupProcessButton = new JButton("Wakeup a Process");
+        displayProcessButton=new JButton("Display Processes");
 
         heading = new JLabel("Operating System");
         Font boldFont = new Font(heading.getFont().getName(), Font.BOLD, 28);
@@ -180,6 +185,7 @@ public class ProcessManagmentFrame  {
         temp.add(changeProcessPriorityButton);
         temp.add(dispatchProcessButton);
         temp.add(wakeupProcessButton);
+        temp.add(displayProcessButton);
         temp.add(heading);
 
 
@@ -190,8 +196,9 @@ public class ProcessManagmentFrame  {
         resumeProcessButton.setBounds(510, 100, 170, 45);
         blockProcessButton.setBounds(300, 170, 170, 45);
         changeProcessPriorityButton.setBounds(515, 170, 170, 45);
-        dispatchProcessButton.setBounds(192, 240, 170, 45);
-        wakeupProcessButton.setBounds(410, 240, 170, 45);
+        dispatchProcessButton.setBounds(80 ,240, 170, 45);
+        wakeupProcessButton.setBounds(300, 240, 170, 45);
+        displayProcessButton.setBounds(515,240,170,45);
         heading.setBounds(245, 20, 305, 50);
 
         createProcessButton.addActionListener(new ActionListener() {
@@ -223,6 +230,25 @@ public class ProcessManagmentFrame  {
                 frame.repaint();
             }
         });
+        dispatchProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("Dispatch"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        wakeupProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(suspendProcessPanel("WakeUp"));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
 
         blockProcessButton.addActionListener(new ActionListener() {
             @Override
@@ -244,9 +270,50 @@ public class ProcessManagmentFrame  {
             }
         });
 
+        displayProcessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(displayProcesses());
+                frame.revalidate();
+                frame.repaint();
+            }
+
+
+        });
         return temp;
     }
 
+    private JPanel displayProcesses() {
+        JPanel temp=new JPanel(null);
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(10,170,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Process Status");
+
+
+        int i=0;
+        while(i<3) {
+            Vector<String> row=new Vector<>();
+            row.add(String.valueOf(processes[i].id));
+            row.add(String.valueOf(processes[i].arrivalTime));
+            row.add(String.valueOf(processes[i].burstTime));
+            row.add(String.valueOf(processes[i].status));
+            model.addRow(row);
+            i++;
+        }
+
+
+
+        temp.add(scrollBar);
+        return temp;
+    }
     ////Suspend Procss
     private JPanel suspendProcessPanel(String stateChange) {
         JPanel temp=new JPanel(null);
@@ -294,7 +361,6 @@ public class ProcessManagmentFrame  {
             processes[j] = new Process(j + 1, Integer.parseInt(processesArrivalTimeInput[j].getText()),
                     Integer.parseInt(processesBurstTimeInput[j].getText()));
         }
-
 
     }
     void print(){
