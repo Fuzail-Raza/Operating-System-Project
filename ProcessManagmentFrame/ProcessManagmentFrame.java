@@ -46,8 +46,8 @@ public class ProcessManagmentFrame  {
     // Process class with ID
     private static class Process {
         private int id;
-        private int arrivalTime;
-        private int burstTime;
+        private final int arrivalTime;
+        private final int burstTime;
         private String status;
         private String ownerOfProcess;
         private int priority;
@@ -96,13 +96,27 @@ public class ProcessManagmentFrame  {
         create.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!isNumber()){
+                    JOptionPane.showMessageDialog(temp,"Please Number of Processes in Number","Wrong Input",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 processesInput = Integer.parseInt(numberOfProcessInput.getText());
                 processesArrivalTimeInput = new JTextField[processesInput];
                 processesBurstTimeInput = new JTextField[processesInput];
                 frame.remove(temp);
-                frame.add(new JPanel().add(inputProcesses()));
+                frame.add(inputProcesses());
                 frame.revalidate();
                 frame.repaint();
+            }
+
+            private boolean isNumber() {
+                try{
+                    Integer.parseInt(numberOfProcessInput.getText());
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
+                }
             }
         });
 
@@ -135,6 +149,10 @@ public class ProcessManagmentFrame  {
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!isNumber()){
+                    JOptionPane.showMessageDialog(temp,"Please Arrival/Burst Time in Number Format","Wrong Input",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 i++;
                 if (i < processesInput) {
                     frame.remove(temp);
@@ -149,6 +167,17 @@ public class ProcessManagmentFrame  {
                     frame.revalidate();
                     frame.repaint();
                     createPCB();
+                }
+            }
+
+            private boolean isNumber() {
+                try{
+                    Integer.parseInt(processesArrivalTimeInput[i].getText());
+                    Integer.parseInt(processesBurstTimeInput[i].getText());
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
                 }
             }
         });
@@ -347,6 +376,10 @@ public class ProcessManagmentFrame  {
         suspend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!checkNumber()){
+                    JOptionPane.showMessageDialog(temp,"Please Enter Process ID only to "+stateChange,stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 boolean isSuspended=false;
                 for(Process process : processes){
                     if(process.id==Integer.parseInt(suspendIDInput.getText())) {
@@ -362,6 +395,16 @@ public class ProcessManagmentFrame  {
                 }
                 if(!isSuspended) {
                     JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Not Successfully . No Process Found",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            private boolean checkNumber() {
+                try{
+                    Integer.parseInt(suspendIDInput.getText());
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
                 }
             }
         });
