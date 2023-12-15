@@ -67,6 +67,7 @@ public class ProcessManagmentFrame  {
     }
 
     public ProcessManagmentFrame () {
+        initiallize();
         initGUI();
     }
 
@@ -266,7 +267,9 @@ public class ProcessManagmentFrame  {
                 frame.remove(temp);
                 frame.add(suspendProcessPanel("Suspend"));
                 frame.revalidate();
+                frame.setSize(907,632);
                 frame.repaint();
+
             }
         });
 
@@ -274,7 +277,7 @@ public class ProcessManagmentFrame  {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.remove(temp);
-                frame.add(displayProcesses());
+//                frame.add(displayProcesses("All"));
                 frame.revalidate();
                 frame.repaint();
             }
@@ -284,14 +287,23 @@ public class ProcessManagmentFrame  {
         return temp;
     }
 
-    private JPanel displayProcesses() {
+    private JScrollPane displayProcesses(String toDisplay) {
+        if(toDisplay.equals("Resume")){
+            toDisplay="Suspend";
+        }
+        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block")){
+            toDisplay="Ready";
+        }
+        else if(toDisplay.equals("WakeUp")){
+            toDisplay="Block";
+        }
         JPanel temp=new JPanel(null);
 
         DefaultTableModel model=new DefaultTableModel();
         JTable table=new JTable(model);
         JScrollPane scrollBar=new JScrollPane(table);
 
-        scrollBar.setBounds(10,170,750,300);
+        scrollBar.setBounds(100,250,750,300);
         model.addColumn("Process ID");
         model.addColumn("Arrival Time");
         model.addColumn("Burst Time");
@@ -301,18 +313,17 @@ public class ProcessManagmentFrame  {
 
         for (Process process:processes) {
             Vector<String> row = new Vector<>();
-            row.add(String.valueOf(process.id));
-            row.add(String.valueOf(process.arrivalTime));
-            row.add(String.valueOf(process.burstTime));
-            row.add(String.valueOf(process.status));
-            model.addRow(row);
+            if(process.status.equals(toDisplay)) {
+                row.add(String.valueOf(process.id));
+                row.add(String.valueOf(process.arrivalTime));
+                row.add(String.valueOf(process.burstTime));
+                row.add(String.valueOf(process.status));
+                model.addRow(row);
+            }
         }
 
 
-
-
-        temp.add(scrollBar);
-        return temp;
+        return scrollBar;
     }
     ////Suspend Procss
     private JPanel suspendProcessPanel(String stateChange) {
@@ -321,10 +332,12 @@ public class ProcessManagmentFrame  {
         suspendInputLabel = new JLabel ("Enter Process Id To "+stateChange+" : ");
         suspendIDInput = new JTextField (5);
         suspend = new JButton (stateChange);
+//        JScrollPane scrollBar=displayProcesses(stateChange);
 
         temp.add (suspendInputLabel);
         temp.add (suspendIDInput);
         temp.add (suspend);
+        temp.add(displayProcesses(stateChange));
 
 
         suspendInputLabel.setBounds (200, 110, 200, 35);
@@ -360,6 +373,14 @@ public class ProcessManagmentFrame  {
         for (int j = 0; j < processesInput; j++) {
             processes[j] = new Process(j + 1, Integer.parseInt(processesArrivalTimeInput[j].getText()),
                     Integer.parseInt(processesBurstTimeInput[j].getText()));
+        }
+
+    }
+    void initiallize(){
+        processes = new Process[6];
+        for (int j = 0; j < 6; j++) {
+            processes[j] = new Process(j + 1, j+2,
+                    j+4);
         }
 
     }
