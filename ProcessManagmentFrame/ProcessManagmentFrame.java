@@ -390,10 +390,11 @@ public class ProcessManagmentFrame  {
                         process.status = stateChange;
                         JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Successfully.",stateChange+" Process",JOptionPane.INFORMATION_MESSAGE);
                         isSuspended=true;
-                        frame.remove(temp);
-                        frame.add(addContent());
-                        frame.revalidate();
-                        frame.repaint();
+                        temp.add(displayProcesses(stateChange));
+//                        frame.remove(temp);
+//                        frame.add(addContent());
+//                        frame.revalidate();
+//                        frame.repaint();
                     }
                     print();
                 }
