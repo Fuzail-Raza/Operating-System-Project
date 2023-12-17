@@ -42,6 +42,7 @@ public class ProcessManagmentFrame  {
     private JLabel suspendInputLabel;
     private JTextField suspendIDInput;
     private JButton suspend;
+    private JButton back;
 
     // Process class with ID
     private static class Process {
@@ -361,17 +362,20 @@ public class ProcessManagmentFrame  {
         suspendInputLabel = new JLabel ("Enter Process Id To "+stateChange+" : ");
         suspendIDInput = new JTextField (5);
         suspend = new JButton (stateChange);
+        back=new JButton("Back");
 //        JScrollPane scrollBar=displayProcesses(stateChange);
 
         temp.add (suspendInputLabel);
         temp.add (suspendIDInput);
         temp.add (suspend);
+        temp.add(back);
         temp.add(displayProcesses(stateChange));
 
 
         suspendInputLabel.setBounds (200, 110, 200, 35);
         suspendIDInput.setBounds (430, 115, 100, 25);
-        suspend.setBounds (295, 175, 125, 30);
+        suspend.setBounds (365, 175, 125, 30);
+        back.setBounds(215, 175, 125, 30);
 
         suspend.addActionListener(new ActionListener() {
             @Override
@@ -406,6 +410,16 @@ public class ProcessManagmentFrame  {
                 catch (Exception e){
                     return false;
                 }
+            }
+        });
+
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(addContent());
+                frame.revalidate();
+                frame.repaint();
             }
         });
         return temp;
