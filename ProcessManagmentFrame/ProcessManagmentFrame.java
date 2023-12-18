@@ -43,6 +43,7 @@ public class ProcessManagmentFrame  {
     private JTextField suspendIDInput;
     private JButton suspend;
     private JButton back;
+    private JLabel idLabel;
 
     // Process class with ID
     private static class Process {
@@ -128,6 +129,8 @@ public class ProcessManagmentFrame  {
         temp.add(processesArrivalTime);
         processesBurstTime = new JLabel("Enter Burst Time of Process " + (i + 1) + " :");
         temp.add(processesBurstTime);
+        idLabel=new JLabel("Process Id  : " +(i+1));
+        temp.add(idLabel);
 
         processesArrivalTimeInput[i] = new JTextField();
         processesBurstTimeInput[i] = new JTextField();
@@ -141,6 +144,7 @@ public class ProcessManagmentFrame  {
             next = new JButton("Next");
         }
 
+        idLabel.setBounds(200,70,205,30);
         processesArrivalTime.setBounds(155, 100, 205, 30);
         next.setBounds(280, 195, 135, 30);
         processesBurstTime.setBounds(150, 145, 205, 30);
@@ -265,7 +269,7 @@ public class ProcessManagmentFrame  {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.remove(temp);
-                frame.add(suspendProcessPanel("Dispatch"));
+                frame.add(suspendProcessPanel("Ready"));
                 frame.revalidate();
                 frame.repaint();
             }
