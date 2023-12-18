@@ -1,10 +1,13 @@
 package ProcessManagmentFrame;
 
+import com.sun.jdi.ArrayReference;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class ProcessManagmentFrame  {
@@ -34,8 +37,10 @@ public class ProcessManagmentFrame  {
     private JTextField[] processesBurstTimeInput;
     private int processesInput;
     private int i = 0;
+    private int ids = 1;
+    private int idShow = 1;
     private JButton next;
-    Process[] processes;
+    ArrayList<Process> processes = new ArrayList<>();
 
     ///For Suspend Process
 
@@ -105,6 +110,7 @@ public class ProcessManagmentFrame  {
                 processesInput = Integer.parseInt(numberOfProcessInput.getText());
                 processesArrivalTimeInput = new JTextField[processesInput];
                 processesBurstTimeInput = new JTextField[processesInput];
+                idShow=ids;
                 frame.remove(temp);
                 frame.add(inputProcesses());
                 frame.revalidate();
@@ -129,7 +135,7 @@ public class ProcessManagmentFrame  {
         temp.add(processesArrivalTime);
         processesBurstTime = new JLabel("Enter Burst Time of Process " + (i + 1) + " :");
         temp.add(processesBurstTime);
-        idLabel=new JLabel("Process Id  : " +(i+1));
+        idLabel=new JLabel("Process Id  : " +idShow++);
         temp.add(idLabel);
 
         processesArrivalTimeInput[i] = new JTextField();
@@ -167,6 +173,7 @@ public class ProcessManagmentFrame  {
                 }
 
                 if (e.getActionCommand().equals("Submit")) {
+                    i=0;
                     frame.remove(temp);
                     frame.add(addContent());
                     frame.revalidate();
@@ -239,7 +246,8 @@ public class ProcessManagmentFrame  {
         createProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(mainPanel);
+//                frame.remove(mainPanel);
+                frame.getContentPane().removeAll();
                 frame.add(createProcessPanel());
                 frame.revalidate();
                 frame.repaint();
@@ -249,8 +257,10 @@ public class ProcessManagmentFrame  {
         destroyProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(temp);
+//                frame.remove(temp);
+                frame.getContentPane().removeAll();
                 frame.add(suspendProcessPanel("Destroy"));
+                frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -261,6 +271,7 @@ public class ProcessManagmentFrame  {
             public void actionPerformed(ActionEvent e) {
                 frame.remove(temp);
                 frame.add(suspendProcessPanel("Resume"));
+                frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -270,6 +281,7 @@ public class ProcessManagmentFrame  {
             public void actionPerformed(ActionEvent e) {
                 frame.remove(temp);
                 frame.add(suspendProcessPanel("Ready"));
+                frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -278,8 +290,10 @@ public class ProcessManagmentFrame  {
         wakeupProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(temp);
+//                frame.remove(temp);
+                frame.getContentPane().removeAll();
                 frame.add(suspendProcessPanel("WakeUp"));
+                frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -288,7 +302,8 @@ public class ProcessManagmentFrame  {
         blockProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(temp);
+//                frame.remove(temp);
+                frame.getContentPane().removeAll();
                 frame.add(suspendProcessPanel("Block"));
                 frame.revalidate();
                 frame.repaint();
@@ -298,7 +313,8 @@ public class ProcessManagmentFrame  {
         suspendProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(temp);
+//                frame.remove(temp);
+                frame.getContentPane().removeAll();
                 frame.add(suspendProcessPanel("Suspend"));
                 frame.revalidate();
                 frame.setSize(907,632);
@@ -310,9 +326,11 @@ public class ProcessManagmentFrame  {
         displayProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.remove(temp);
+//                frame.remove(temp);
+                frame.getContentPane().removeAll();
 //                frame.add(displayProcesses("All"));
                 frame.revalidate();
+                frame.setSize(907,632);
                 frame.repaint();
             }
 
@@ -325,12 +343,13 @@ public class ProcessManagmentFrame  {
         if(toDisplay.equals("Resume")){
             toDisplay="Suspend";
         }
-        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block")){
+        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block") || toDisplay.equals("Destroy") ){
             toDisplay="Ready";
         }
         else if(toDisplay.equals("WakeUp")){
             toDisplay="Block";
         }
+
         JPanel temp=new JPanel(null);
 
         DefaultTableModel model=new DefaultTableModel();
@@ -388,23 +407,25 @@ public class ProcessManagmentFrame  {
                     JOptionPane.showMessageDialog(temp,"Please Enter Process ID only to "+stateChange,stateChange+" Process",JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                boolean isSuspended=false;
                 for(Process process : processes){
                     if(process.id==Integer.parseInt(suspendIDInput.getText())) {
-                        process.status = stateChange;
+                        if(stateChange.equals("Destroy")) {
+                            processes.remove(process);
+                        }
+                        else{
+                            process.status=stateChange;
+                        }
                         JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Successfully.",stateChange+" Process",JOptionPane.INFORMATION_MESSAGE);
-                        isSuspended=true;
                         temp.add(displayProcesses(stateChange));
 //                        frame.remove(temp);
 //                        frame.add(addContent());
 //                        frame.revalidate();
 //                        frame.repaint();
+                        return;
                     }
                     print();
                 }
-                if(!isSuspended) {
                     JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Not Successfully . No Process Found",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
-                }
             }
 
             private boolean checkNumber() {
@@ -431,24 +452,23 @@ public class ProcessManagmentFrame  {
 
     }
     void createPCB(){
-        processes = new Process[processesInput];
+//        processes = new ArrayList<>();
         for (int j = 0; j < processesInput; j++) {
-            processes[j] = new Process(j + 1, Integer.parseInt(processesArrivalTimeInput[j].getText()),
-                    Integer.parseInt(processesBurstTimeInput[j].getText()));
+            processes.add(new Process(ids++, Integer.parseInt(processesArrivalTimeInput[j].getText()),
+                    Integer.parseInt(processesBurstTimeInput[j].getText())));
         }
 
     }
     void initiallize(){
-        processes = new Process[6];
         for (int j = 0; j < 6; j++) {
-            processes[j] = new Process(j + 1, j+2,
-                    j+4);
+            processes.add(new Process(ids++, j + 2,
+                    j + 4));
         }
 
     }
     void print(){
         for (int j = 0; j < processesInput; j++) {
-            System.out.println(processes[j].id + "Arrival : " + processes[j].arrivalTime+" Burst Time " + processes[j].burstTime+ " Status " + processes[j].status );
+            System.out.println(processes.get(j).id + "Arrival : " + processes.get(j).arrivalTime+" Burst Time " + processes.get(j).burstTime+ " Status " + processes.get(j).status );
         }
     }
     public static void main(String[] args) {
