@@ -6,8 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Vector;
-
+import java.util.Queue;
 public class ProcessManagmentFrame  {
 
     private JButton createProcessButton;
@@ -31,8 +33,10 @@ public class ProcessManagmentFrame  {
     private JButton create;
     private JLabel processesArrivalTime;
     private JLabel processesBurstTime;
+    private JLabel processesPriority;
     private JTextField[] processesArrivalTimeInput;
     private JTextField[] processesBurstTimeInput;
+    private JTextField[] processesPriorityInput;
     private int processesInput;
     private int i = 0;
     private int ids = 1;
@@ -67,22 +71,29 @@ public class ProcessManagmentFrame  {
         private String ownerOfProcess;
         private int priority;
         private int processor;
+        private int ct;
+        private int wt;
+        private int tat;
+        private int remainingTime;
 
-
-        public Process(int id, int arrivalTime, int burstTime) {
+        public Process(int id, int arrivalTime, int burstTime,int priority) {
             this.id = id;
             this.arrivalTime = arrivalTime;
             this.burstTime = burstTime;
             this.status="Ready";
-            this.priority=0;
+            this.priority=priority;
             this.processor=0;
             this.ownerOfProcess="null";
+            this.ct=-1;
+            this.wt=-1;
+            this.tat=-1;
+            this.remainingTime=-1;
 
         }
     }
 
     public ProcessManagmentFrame () {
-        initiallize();
+//        initiallize();
         initGUI();
     }
 
@@ -118,6 +129,7 @@ public class ProcessManagmentFrame  {
                 processesInput = Integer.parseInt(numberOfProcessInput.getText());
                 processesArrivalTimeInput = new JTextField[processesInput];
                 processesBurstTimeInput = new JTextField[processesInput];
+                processesPriorityInput = new JTextField[processesInput];
                 idShow=ids;
                 frame.remove(temp);
                 frame.add(inputProcesses());
@@ -143,14 +155,18 @@ public class ProcessManagmentFrame  {
         temp.add(processesArrivalTime);
         processesBurstTime = new JLabel("Enter Burst Time of Process " + (i + 1) + " :");
         temp.add(processesBurstTime);
+        processesPriority=new JLabel("Enter Priority of Process " + (i + 1) );
+        temp.add(processesPriority);
         idLabel=new JLabel("Process Id  : " +idShow++);
         temp.add(idLabel);
 
         processesArrivalTimeInput[i] = new JTextField();
         processesBurstTimeInput[i] = new JTextField();
+        processesPriorityInput[i]=new JTextField();
 
         temp.add(processesArrivalTimeInput[i]);
         temp.add(processesBurstTimeInput[i]);
+        temp.add(processesPriorityInput[i]);
 
         if (i == processesInput - 1) {
             next = new JButton("Submit");
@@ -160,10 +176,13 @@ public class ProcessManagmentFrame  {
 
         idLabel.setBounds(200,70,205,30);
         processesArrivalTime.setBounds(155, 100, 205, 30);
-        next.setBounds(280, 195, 135, 30);
-        processesBurstTime.setBounds(150, 145, 205, 30);
+        next.setBounds(280, 240, 135, 30);
+        processesBurstTime.setBounds(155, 145, 205, 30);
+        processesPriority.setBounds(155, 190, 205, 30);
+
         processesArrivalTimeInput[i].setBounds(375, 100, 130, 30);
         processesBurstTimeInput[i].setBounds(375, 145, 130, 30);
+        processesPriorityInput[i].setBounds(375, 190, 130, 30);
 
         next.addActionListener(new ActionListener() {
             @Override
@@ -412,8 +431,13 @@ public class ProcessManagmentFrame  {
         sjfButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int result=JOptionPane.showConfirmDialog(null, "Do you want to non-Permitive Scheduling ?", "Permitive or Not", JOptionPane.YES_NO_OPTION);
                 ArrayList<Process> t = new ArrayList<>();
-                t=performSJF();
+                if (result == JOptionPane.YES_OPTION) {
+                    t=performSJF();
+                } else {
+                    t=performSJFPermitive();
+                }
                 if(t==null){
                     JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
                 }else {
@@ -450,21 +474,129 @@ public class ProcessManagmentFrame  {
         return temp;
     }
 
-    private ArrayList<ProcessManagmentFrame.ProcessManagmentFrame.Process> performRoundRobin() {
+    private ArrayList<Process> performSJFPermitive() {
         return null;
     }
 
-    private ArrayList<ProcessManagmentFrame.ProcessManagmentFrame.Process> performPriorityAlgo() {
-        return null;
+    private ArrayList<Process> performRoundRobin() {
+        ArrayList<Process> temp = new ArrayList<>(processes);
+
+        int timeQuantum = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter Quantum for Processes", "0", JOptionPane.INFORMATION_MESSAGE));
+        Queue<Process> q = new LinkedList<>();
+        int currentTime = 0;
+        int remainingProcesses = temp.size();
+
+        for (int i = 0; i < temp.size(); i++) {
+            temp.get(i).remainingTime = temp.get(i).burstTime;
+        }
+
+        while (remainingProcesses > 0) {
+            for (int i = 0; i < temp.size(); i++) {
+                if (temp.get(i).arrivalTime <= currentTime && temp.get(i).remainingTime > 0) {
+                    int executionTime = Math.min(temp.get(i).remainingTime, timeQuantum);
+                    temp.get(i).remainingTime -= executionTime;
+                    currentTime += executionTime;
+                    if (temp.get(i).remainingTime == 0) {
+                        remainingProcesses--;
+                        temp.get(i).ct = currentTime;
+                        temp.get(i).tat = temp.get(i).ct - temp.get(i).arrivalTime;
+                        temp.get(i).wt = temp.get(i).tat - temp.get(i).burstTime;
+                    }
+                    q.add(temp.get(i));
+                }
+            }
+        }
+        return temp;
+    }
+
+    private ArrayList<Process> performPriorityAlgo() {
+        ArrayList<Process> temp=processes;
+//        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
+
+        for (int i = 0; i < temp.size(); i++) {
+            for (int j = 0; j < temp.size() - i - 1; j++) {
+                if (processes.get(j).priority > processes.get(j + 1).priority) {
+                    // Swap processes
+                    Process tem = processes.get(j);
+                    processes.set(j, processes.get(j + 1));
+                    processes.set(j + 1, tem);
+                }
+            }
+        }
+
+        int sum = 0;
+        for (Process process : processes) {
+            if (sum < process.arrivalTime) {
+                sum = process.arrivalTime;
+            }
+            sum += process.burstTime;
+            process.ct = sum;
+            process.tat = process.ct - process.arrivalTime;
+            process.wt = process.tat - process.burstTime;
+        }
+
+
+        return temp;
+
     }
 
     private ArrayList<Process> performSJF() {
-        return null;
+        ArrayList<Process> temp=processes;
+
+        for (int i = 0; i < temp.size(); i++) {
+            for (int j = 0; j < temp.size() - i - 1; j++) {
+                if (processes.get(j).burstTime > processes.get(j + 1).burstTime) {
+                    // Swap processes
+                    Process tem = processes.get(j);
+                    processes.set(j, processes.get(j + 1));
+                    processes.set(j + 1, tem);
+                }
+            }
+        }
+
+        int sum = 0;
+        for (Process process : processes) {
+            if (sum < process.arrivalTime) {
+                sum = process.arrivalTime;
+            }
+            sum += process.burstTime;
+            process.ct = sum;
+            process.tat = process.ct - process.arrivalTime;
+            process.wt = process.tat - process.burstTime;
+        }
+
+        return temp;
     }
 
     private ArrayList<Process> performFCFS() {
 
-        return null;
+        ArrayList<Process> temp=processes;
+//        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
+
+        for (int i = 0; i < temp.size(); i++) {
+            for (int j = 0; j < temp.size() - i - 1; j++) {
+                if (processes.get(j).arrivalTime > processes.get(j + 1).arrivalTime) {
+                    // Swap processes
+                    Process tem = processes.get(j);
+                    processes.set(j, processes.get(j + 1));
+                    processes.set(j + 1, tem);
+                }
+            }
+        }
+
+        int sum = 0;
+        for (Process process : processes) {
+            if (sum < process.arrivalTime) {
+                sum = process.arrivalTime;
+            }
+            sum += process.burstTime;
+            process.ct = sum;
+            process.tat = process.ct - process.arrivalTime;
+            process.wt = process.tat - process.burstTime;
+        }
+
+
+        return temp;
     }
 
     private JScrollPane displaySchedulingProcesses(ArrayList<Process> t) {
@@ -478,6 +610,7 @@ public class ProcessManagmentFrame  {
         model.addColumn("Process ID");
         model.addColumn("Arrival Time");
         model.addColumn("Burst Time");
+        model.addColumn("Priority");
         model.addColumn("Waiting Time");
         model.addColumn("TAT");
         model.addColumn("CT");
@@ -487,6 +620,12 @@ public class ProcessManagmentFrame  {
             row.add(String.valueOf(process.id));
             row.add(String.valueOf(process.arrivalTime));
             row.add(String.valueOf(process.burstTime));
+            row.add(String.valueOf(process.priority));
+            if(process.wt!=-1 && process.tat!=-1 && process.ct!=-1) {
+                row.add(String.valueOf(process.wt));
+                row.add(String.valueOf(process.tat));
+                row.add(String.valueOf(process.ct));
+            }
             model.addRow(row);
         }
 
@@ -709,14 +848,14 @@ public class ProcessManagmentFrame  {
 //        processes = new ArrayList<>();
         for (int j = 0; j < processesInput; j++) {
             processes.add(new Process(ids++, Integer.parseInt(processesArrivalTimeInput[j].getText()),
-                    Integer.parseInt(processesBurstTimeInput[j].getText())));
+                    Integer.parseInt(processesBurstTimeInput[j].getText()),Integer.parseInt(processesPriorityInput[j].getText())));
         }
 
     }
     void initiallize(){
         for (int j = 0; j < 6; j++) {
             processes.add(new Process(ids++, j + 2,
-                    j + 4));
+                    j + 4,0));
         }
 
     }
