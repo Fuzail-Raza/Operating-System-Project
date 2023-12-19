@@ -39,6 +39,7 @@ public class ProcessManagmentFrame  {
     private int idShow = 1;
     private JButton next;
     ArrayList<Process> processes = new ArrayList<>();
+    ArrayList<Process> schedulingQueue = new ArrayList<>();
 
     ///For Suspend Process
 
@@ -47,6 +48,15 @@ public class ProcessManagmentFrame  {
     private JButton suspend;
     private JButton back;
     private JLabel idLabel;
+
+
+    /// For Scheduling Panel
+
+    private JButton fcfsButton;
+    private JButton roundRobinButton;
+    private JButton priorityButton;
+    private JButton sjfButton;
+    private JButton backButton;
 
     // Process class with ID
     private static class Process {
@@ -335,7 +345,161 @@ public class ProcessManagmentFrame  {
 
 
         });
+
+
+        processCommunicationWithOtherProcessesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                schedulingQueue=new ArrayList<>();
+                createQueue();
+                frame.getContentPane().removeAll();
+                frame.add(schedulingPanel());
+                frame.revalidate();
+                frame.setSize(907,632);
+                frame.repaint();
+
+            }
+        });
         return temp;
+    }
+
+    private JPanel schedulingPanel() {
+        JPanel temp=new JPanel(null);
+
+        fcfsButton = new JButton ("FCFS");
+        roundRobinButton = new JButton ("Round Robin");
+        priorityButton = new JButton ("Priority");
+        sjfButton = new JButton ("SJF");
+        backButton = new JButton ("Back");
+
+        temp.add (fcfsButton);
+        temp.add (roundRobinButton);
+        temp.add (priorityButton);
+        temp.add (sjfButton);
+        temp.add (backButton);
+
+        fcfsButton.setBounds (110, 60, 120, 30);
+        roundRobinButton.setBounds (240, 60, 120, 30);
+        priorityButton.setBounds (370, 60, 120, 30);
+        sjfButton.setBounds (500, 60, 120, 30);
+        backButton.setBounds (255, 100, 225, 30);
+
+        temp.add(displaySchedulingProcesses(processes));
+
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(addContent());
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        fcfsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Process> t = new ArrayList<>();
+                t=performFCFS();
+                if(t==null){
+                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
+                }else {
+                    temp.add(displaySchedulingProcesses(t));
+                }
+            }
+        });
+        sjfButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Process> t = new ArrayList<>();
+                t=performSJF();
+                if(t==null){
+                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
+                }else {
+                    temp.add(displaySchedulingProcesses(t));
+                }
+            }
+        });
+
+        priorityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Process> t = new ArrayList<>();
+                t=performPriorityAlgo();
+                if(t==null){
+                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
+                }else {
+                    temp.add(displaySchedulingProcesses(t));
+                }
+            }
+        });
+
+        roundRobinButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Process> t = new ArrayList<>();
+                t=performRoundRobin();
+                if(t==null){
+                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
+                }else {
+                    temp.add(displaySchedulingProcesses(t));
+                }
+            }
+        });
+        return temp;
+    }
+
+    private ArrayList<ProcessManagmentFrame.ProcessManagmentFrame.Process> performRoundRobin() {
+        return null;
+    }
+
+    private ArrayList<ProcessManagmentFrame.ProcessManagmentFrame.Process> performPriorityAlgo() {
+        return null;
+    }
+
+    private ArrayList<Process> performSJF() {
+        return null;
+    }
+
+    private ArrayList<Process> performFCFS() {
+
+        return null;
+    }
+
+    private JScrollPane displaySchedulingProcesses(ArrayList<Process> t) {
+
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Waiting Time");
+        model.addColumn("TAT");
+        model.addColumn("CT");
+
+        for (Process process:t) {
+            Vector<String> row = new Vector<>();
+            row.add(String.valueOf(process.id));
+            row.add(String.valueOf(process.arrivalTime));
+            row.add(String.valueOf(process.burstTime));
+            model.addRow(row);
+        }
+
+
+        return scrollBar;
+    }
+
+    private void createQueue() {
+        for(Process process : processes){
+            if(process.status.equals("Running")) {
+                schedulingQueue.add(process);
+            }
+        }
     }
 
     private JPanel displayAllProcesses() {
