@@ -1,7 +1,5 @@
 package ProcessManagmentFrame;
 
-import com.sun.jdi.ArrayReference;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -280,7 +278,7 @@ public class ProcessManagmentFrame  {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.remove(temp);
-                frame.add(suspendProcessPanel("Ready"));
+                frame.add(suspendProcessPanel("Running"));
                 frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
@@ -305,6 +303,7 @@ public class ProcessManagmentFrame  {
 //                frame.remove(temp);
                 frame.getContentPane().removeAll();
                 frame.add(suspendProcessPanel("Block"));
+                frame.setSize(907,632);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -328,7 +327,7 @@ public class ProcessManagmentFrame  {
             public void actionPerformed(ActionEvent e) {
 //                frame.remove(temp);
                 frame.getContentPane().removeAll();
-//                frame.add(displayProcesses("All"));
+                frame.add(displayAllProcesses());
                 frame.revalidate();
                 frame.setSize(907,632);
                 frame.repaint();
@@ -339,16 +338,57 @@ public class ProcessManagmentFrame  {
         return temp;
     }
 
+    private JPanel displayAllProcesses() {
+
+        JPanel temp=new JPanel(new BorderLayout(2,2));
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+        scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Process Status");
+        back=new JButton("Back");
+        temp.add(back,BorderLayout.SOUTH);
+
+        for (Process process:processes) {
+            Vector<String> row = new Vector<>();
+                row.add(String.valueOf(process.id));
+                row.add(String.valueOf(process.arrivalTime));
+                row.add(String.valueOf(process.burstTime));
+                row.add(String.valueOf(process.status));
+                model.addRow(row);
+        }
+
+        temp.add(scrollBar,BorderLayout.CENTER);
+
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(addContent());
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+        return temp;
+    }
+
     private JScrollPane displayProcesses(String toDisplay) {
         if(toDisplay.equals("Resume")){
             toDisplay="Suspend";
         }
-        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block") || toDisplay.equals("Destroy") ){
+        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block") || toDisplay.equals("Running")   ){
             toDisplay="Ready";
+        }
+        else if(toDisplay.equals("Destroy")){
+            return displayAllProcessesDestroy();
         }
         else if(toDisplay.equals("WakeUp")){
             toDisplay="Block";
         }
+
 
         JPanel temp=new JPanel(null);
 
@@ -373,6 +413,34 @@ public class ProcessManagmentFrame  {
                 row.add(String.valueOf(process.status));
                 model.addRow(row);
             }
+        }
+
+
+        return scrollBar;
+    }
+
+    private JScrollPane displayAllProcessesDestroy() {
+
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Process Status");
+
+
+
+        for (Process process:processes) {
+            Vector<String> row = new Vector<>();
+                row.add(String.valueOf(process.id));
+                row.add(String.valueOf(process.arrivalTime));
+                row.add(String.valueOf(process.burstTime));
+                row.add(String.valueOf(process.status));
+                model.addRow(row);
         }
 
 
@@ -411,17 +479,39 @@ public class ProcessManagmentFrame  {
                     if(process.id==Integer.parseInt(suspendIDInput.getText())) {
                         if(stateChange.equals("Destroy")) {
                             processes.remove(process);
+                            JOptionPane.showMessageDialog(temp, "Process " + stateChange + " Successfully.", stateChange + " Process", JOptionPane.INFORMATION_MESSAGE);
+                            temp.add(displayProcesses(stateChange));
+                            return;
                         }
-                        else{
-                            process.status=stateChange;
+                        else if(stateChange.equals("Resume") && !process.status.equals("Suspend")){
+                            JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Not Successfully . No Process Found",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
-                        JOptionPane.showMessageDialog(temp,"Process "+stateChange+" Successfully.",stateChange+" Process",JOptionPane.INFORMATION_MESSAGE);
-                        temp.add(displayProcesses(stateChange));
+                        else if(process.status.equals(stateChange)){
+                            JOptionPane.showMessageDialog(temp,"Processs "+stateChange+" Not Successfully . Process Already "+stateChange,stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        else if (stateChange.equals("WakeUp") && !process.status.equals("Block")) {
+                            JOptionPane.showMessageDialog(temp,"Processss "+stateChange+" Not Successfully . No Process Found",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        else if(stateChange.equals("Resume") || stateChange.equals("WakeUp")){
+                            process.status = "Ready";
+                        }
+                        else if(stateChange.equals("Running") && !process.status.equals("Ready")){
+                            JOptionPane.showMessageDialog(temp,"Processss "+stateChange+" Not Successfully . Process is not in Ready State",stateChange+" Process",JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        else {
+                                process.status = stateChange;
+                        }
+                            JOptionPane.showMessageDialog(temp, "Process " + stateChange + " Successfully.", stateChange + " Process", JOptionPane.INFORMATION_MESSAGE);
+                            temp.add(displayProcesses(stateChange));
 //                        frame.remove(temp);
 //                        frame.add(addContent());
 //                        frame.revalidate();
 //                        frame.repaint();
-                        return;
+                            return;
                     }
                     print();
                 }
