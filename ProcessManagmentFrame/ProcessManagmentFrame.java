@@ -93,7 +93,7 @@ public class ProcessManagmentFrame  {
     }
 
     public ProcessManagmentFrame () {
-//        initiallize();
+        initiallize();
         initGUI();
     }
 
@@ -682,7 +682,10 @@ public class ProcessManagmentFrame  {
         if(toDisplay.equals("Resume")){
             toDisplay="Suspend";
         }
-        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block") || toDisplay.equals("Running")   ){
+        else if(toDisplay.equals("Suspend") || toDisplay.equals("Block") ){
+            return  displayAllProcessesTwoArgs("Ready","Running");
+        }
+        else if(toDisplay.equals("Running")){
             toDisplay="Ready";
         }
         else if(toDisplay.equals("Destroy")){
@@ -710,6 +713,35 @@ public class ProcessManagmentFrame  {
         for (Process process:processes) {
             Vector<String> row = new Vector<>();
             if(process.status.equals(toDisplay)) {
+                row.add(String.valueOf(process.id));
+                row.add(String.valueOf(process.arrivalTime));
+                row.add(String.valueOf(process.burstTime));
+                row.add(String.valueOf(process.status));
+                model.addRow(row);
+            }
+        }
+
+
+        return scrollBar;
+    }
+
+    private JScrollPane displayAllProcessesTwoArgs(String toDisplayOne,String toDisplayTwo) {
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Process Status");
+
+
+
+        for (Process process:processes) {
+            Vector<String> row = new Vector<>();
+            if(process.status.equals(toDisplayOne) || process.status.equals(toDisplayTwo) ) {
                 row.add(String.valueOf(process.id));
                 row.add(String.valueOf(process.arrivalTime));
                 row.add(String.valueOf(process.burstTime));
