@@ -100,7 +100,7 @@ public class ProcessManagmentFrame  {
     }
 
     public ProcessManagmentFrame () {
-        initiallize();
+//        initiallize();
         initGUI();
     }
 
@@ -527,7 +527,8 @@ public class ProcessManagmentFrame  {
         sjfButton.setBounds (500, 60, 120, 30);
         backButton.setBounds (255, 100, 225, 30);
 
-        temp.add(displaySchedulingProcesses(processes));
+        temp.add(displaySchedulingProcesses(schedulingQueue));
+//        temp.add(displaySchedulingProcesses(processes));
 
 
         backButton.addActionListener(new ActionListener() {
@@ -632,7 +633,7 @@ public class ProcessManagmentFrame  {
         }
         return temp;
     }
-
+//todo Changes Processes array to schedulingqueue to chedule only running processes
     private ArrayList<Process> performPriorityAlgo() {
         ArrayList<Process> temp=processes;
 //        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
@@ -694,22 +695,22 @@ public class ProcessManagmentFrame  {
 
     private ArrayList<Process> performFCFS() {
 
-        ArrayList<Process> temp=processes;
+        ArrayList<Process> temp=schedulingQueue;
 //        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
 
         for (int i = 0; i < temp.size(); i++) {
             for (int j = 0; j < temp.size() - i - 1; j++) {
-                if (processes.get(j).arrivalTime > processes.get(j + 1).arrivalTime) {
+                if (temp.get(j).arrivalTime > temp.get(j + 1).arrivalTime) {
                     // Swap processes
-                    Process tem = processes.get(j);
-                    processes.set(j, processes.get(j + 1));
-                    processes.set(j + 1, tem);
+                    Process tem = temp.get(j);
+                    temp.set(j, temp.get(j + 1));
+                    temp.set(j + 1, tem);
                 }
             }
         }
 
         int sum = 0;
-        for (Process process : processes) {
+        for (Process process : temp) {
             if (sum < process.arrivalTime) {
                 sum = process.arrivalTime;
             }
@@ -1016,8 +1017,8 @@ public class ProcessManagmentFrame  {
 
     }
     void print(){
-        for (int j = 0; j < processesInput; j++) {
-            System.out.println(processes.get(j).id + "Arrival : " + processes.get(j).arrivalTime+" Burst Time " + processes.get(j).burstTime+ " Status " + processes.get(j).status );
+        for (Process process : processes) {
+            System.out.println(process.id + "Arrival : " + process.arrivalTime+" Burst Time " + process.burstTime+ " Status " + process.status );
         }
     }
     public static void main(String[] args) {
