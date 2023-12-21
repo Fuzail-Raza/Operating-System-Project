@@ -53,6 +53,13 @@ public class ProcessManagmentFrame  {
     private JButton back;
     private JLabel idLabel;
 
+    ////For Priority Panel
+
+    JLabel processIDLabelPriority;
+    JLabel priorityLabelPriority ;
+    JTextField processIDInputPriority;
+    JTextField priorityInputPriority;
+    JButton changePriority;
 
     /// For Scheduling Panel
 
@@ -383,7 +390,120 @@ public class ProcessManagmentFrame  {
 
             }
         });
+
+        changeProcessPriorityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getContentPane().removeAll();
+                frame.add(changePriorityPanel());
+                frame.revalidate();
+                frame.setSize(907,632);
+                frame.repaint();
+            }
+        });
         return temp;
+    }
+
+    private JPanel changePriorityPanel() {
+
+        JPanel temp=new JPanel(null);
+        backButton = new JButton ("Back");
+        changePriority = new JButton ("Change Priority");
+        processIDLabelPriority = new JLabel("Enter Process ID : ");
+        priorityLabelPriority = new JLabel("Enter Priority to Change : ");
+        processIDInputPriority=new JTextField();
+        priorityInputPriority=new JTextField();
+
+
+        changePriority.setBounds (365, 175, 125, 30);
+        backButton.setBounds(215, 175, 125, 30);
+        processIDLabelPriority.setBounds(220, 80, 200, 30);
+        priorityLabelPriority.setBounds(220, 110, 200, 30);
+        processIDInputPriority.setBounds(440, 80, 130, 30);
+        priorityInputPriority.setBounds(440, 110, 130, 30);
+
+        temp.add(displayPriority());
+        temp.add(backButton);
+        temp.add(changePriority);
+        temp.add(priorityLabelPriority);
+        temp.add(processIDLabelPriority);
+        temp.add(priorityInputPriority);
+        temp.add(processIDInputPriority);
+
+
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.remove(temp);
+                frame.add(addContent());
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        changePriority.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!checkNumber()){
+                    JOptionPane.showMessageDialog(temp,"Please Enter Valid Process ID / Priority  ","Input Not Valid",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                for(Process process : processes){
+                    if(process.id==Integer.parseInt(processIDInputPriority.getText())) {
+                        process.priority = Integer.parseInt(priorityInputPriority.getText());
+                        JOptionPane.showMessageDialog(temp, "Process Priority Changed Successfully.", "Priority Changed", JOptionPane.INFORMATION_MESSAGE);
+                        temp.add(displayPriority());
+                        return;
+                    }
+                }
+                JOptionPane.showMessageDialog(temp,"Process Priority Not Changed Successfully . No Process Found","Process Not FOund",JOptionPane.ERROR_MESSAGE);
+            }
+
+            private boolean checkNumber() {
+                try{
+                    Integer.parseInt(processIDInputPriority.getText());
+                    Integer.parseInt(priorityInputPriority.getText());
+
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
+                }
+            }
+        });
+
+        return temp;
+
+    }
+
+    private JScrollPane displayPriority() {
+
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Process ID");
+        model.addColumn("Arrival Time");
+        model.addColumn("Burst Time");
+        model.addColumn("Process Status");
+        model.addColumn("Process Priority");
+
+
+
+        for (Process process:processes) {
+            Vector<String> row = new Vector<>();
+            row.add(String.valueOf(process.id));
+            row.add(String.valueOf(process.arrivalTime));
+            row.add(String.valueOf(process.burstTime));
+            row.add(String.valueOf(process.status));
+            row.add(String.valueOf(process.priority));
+            model.addRow(row);
+        }
+
+        return scrollBar;
     }
 
     private JPanel schedulingPanel() {
