@@ -191,6 +191,10 @@ public class ProcessManagmentFrame  {
                     JOptionPane.showMessageDialog(temp,"Please Arrival/Burst Time in Number Format","Wrong Input",JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                if(processesBurstTimeInput[i].getText().equals("0")){
+                    JOptionPane.showMessageDialog(temp,"Burst Time Cannot be Zero","Wrong Input",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 i++;
                 if (i < processesInput) {
                     frame.remove(temp);
