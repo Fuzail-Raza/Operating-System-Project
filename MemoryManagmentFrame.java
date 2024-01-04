@@ -78,9 +78,9 @@ public class MemoryManagmentFrame {
             public void actionPerformed(ActionEvent e) {
 
             if(isFormValid()) {
-                performFIFO();
+//                performFIFO();
 
-//                performLRU();
+                performLRU();
             }
             }
 
@@ -115,10 +115,27 @@ public class MemoryManagmentFrame {
                         return false;
                     }
 
-
+                    public void printFrames() {
+                        System.out.print("Frames: ");
+                        for (int key : cache.keySet()) {
+                            System.out.print(key + " ");
+                        }
+                        System.out.println();
+                    }
                 }
                 LRUCache lruCache = new LRUCache(Integer.parseInt(noOfFramesInput.getText()));
 
+                int pageFaults = 0;
+                String[] references = stringInput.getText().split("\\s+");
+                for (String reference : references) {
+                    int page = Integer.parseInt(reference);
+                    if (!lruCache.referencePage(page)) {
+                        pageFaults++;
+                    }
+                    lruCache.printFrames();
+                }
+
+                System.out.println("The number of page faults using LRU are: " + pageFaults);
             }
 
 
@@ -128,7 +145,7 @@ public class MemoryManagmentFrame {
     private boolean isFormValid() {
 
         try{
-            Integer.parseInt(noOfFramesInput.getText());
+            Integer.parseInt(noOfFramesInput.getText().trim());
             Integer.parseInt(lengthInput.getText());
 
             String[] inputStrings = stringInput.getText().split("\\s+");
@@ -151,7 +168,7 @@ public class MemoryManagmentFrame {
         int i = 0, j = 0, k = 0, il = 0, m, n, flag = 1;
         int[] rs, p;
 
-        m = Integer.parseInt(noOfFramesInput.getText());
+        m = Integer.parseInt(noOfFramesInput.getText().trim());
 
 
 
@@ -238,7 +255,7 @@ public class MemoryManagmentFrame {
         scrollBar.setBounds(20,250,820,310);
         model.addColumn("Ref String");
 
-        for (int i=0;i<Integer.parseInt(noOfFramesInput.getText());i++){
+        for (int i=0;i<Integer.parseInt(noOfFramesInput.getText().trim());i++){
             model.addColumn("Frame "+i);
         }
         model.addColumn("Fault No");
