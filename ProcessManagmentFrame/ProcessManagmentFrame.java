@@ -100,7 +100,7 @@ public class ProcessManagmentFrame  {
     }
 
     public ProcessManagmentFrame () {
-//        initiallize();
+        initiallize();
         initGUI();
     }
 
