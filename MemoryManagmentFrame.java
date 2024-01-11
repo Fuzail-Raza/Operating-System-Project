@@ -18,6 +18,8 @@ public class MemoryManagmentFrame {
     private JLabel stringLabel;
     private JButton LRUButton;
     private JButton FIFO;
+    private JButton backButton;
+
     private JLabel pageFaultHeading;
     private String[] framesRecord;
     private int frame = 0;
@@ -42,6 +44,7 @@ public class MemoryManagmentFrame {
         stringLabel = new JLabel ("Reference String");
         LRUButton = new JButton ("LRU");
         FIFO = new JButton ("FIFO");
+        backButton=new JButton("Back");
         pageFaultHeading = new JLabel ("Page ");
 
         Font f1=new Font("Arial",Font.BOLD,16);
@@ -57,6 +60,7 @@ public class MemoryManagmentFrame {
         mainPanel.add (LRUButton);
         mainPanel.add (FIFO);
         mainPanel.add (pageFaultHeading);
+        mainPanel.add(backButton);
 
         noOfFramesInput.setBounds (230, 60, 100, 25);
         lengthInput.setBounds (230, 90, 100, 25);
@@ -66,6 +70,7 @@ public class MemoryManagmentFrame {
         stringLabel.setBounds (80, 120, 100, 25);
         LRUButton.setBounds (120, 175, 100, 25);
         FIFO.setBounds (245, 175, 100, 25);
+        backButton.setBounds(365,175,100,25);
         pageFaultHeading.setBounds (130, 210, 390, 35);
 
 //        mainPanel.add(displaySchedulingProcesses(schedulingQueue));
@@ -73,6 +78,14 @@ public class MemoryManagmentFrame {
         mainFrame.add(mainPanel);
         mainFrame.setSize(873,603);
         mainFrame.setVisible(true);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new MenuFrame();
+            }
+        });
 
 
         LRUButton.addActionListener(new ActionListener() {
@@ -94,11 +107,11 @@ public class MemoryManagmentFrame {
 
                 public LRU(int capacity) {
                     this.capacity = capacity;
-                    this.cache = new LinkedHashMap<>(capacity, 0.75f, true);
-                    for(int i=0;i<capacity;i++){
-                        this.cache.put(-1,i);
-                        JOptionPane.showMessageDialog(null,i);
-                    }
+                    this.cache = new LinkedHashMap<>(capacity);
+//                    for(int i=0;i<capacity;i++){
+//                        this.cache.put(-1,i);
+//                        JOptionPane.showMessageDialog(null,i);
+//                    }
 
                 }
 
@@ -122,14 +135,25 @@ public class MemoryManagmentFrame {
                     return false;
                 }
 
-                public void printFrames(int fault) {
+                public void printFrames(int fault,Boolean isPageFault) {
                     System.out.print("Frames: ");
+                    int i=0;
                     for (int key : cache.keySet()) {
                         framesRecord[frame] += key + ",";
                         System.out.print(key + " ");
+                        i++;
+
                     }
-                    framesRecord[frame] += fault + ",";
+                    while(i<capacity){
+                        framesRecord[frame] += -1 + ",";
+                        System.out.print(-1 + " ");
+                        i++;
+                    }
+                    if(isPageFault) {
+                        framesRecord[frame] += fault + ",";
+                    }
                     frame++;
+
                 }
 
                 void print(){
@@ -149,20 +173,21 @@ public class MemoryManagmentFrame {
 
                 int pageFaults = 0;
                 for (String reference : references) {
+                    Boolean isFaultOccurs=false;
                     int page = Integer.parseInt(reference);
                     framesRecord[frame]+=reference;
                     framesRecord[frame]+=",";
                     if (!lruCache.referencePage(page)) {
+                        isFaultOccurs=true;
                         pageFaults++;
                     }
-                    lruCache.printFrames(pageFaults);
+                    lruCache.printFrames(pageFaults,isFaultOccurs);
                     System.out.println();
                 }
 
-                System.out.println("The total number of page faults using LRU is: " + pageFaults);
+                pageFaultHeading.setText("The number of page faults using LRU are: " + pageFaults);
                 lruCache.print();
 
-                pageFaultHeading.setText("The number of page faults using FIFO are: " + pageFaults);
                 pageFaultHeading.setVisible(true);
                 mainPanel.add(displayLRUFrames());
                 mainPanel.repaint();

@@ -75,8 +75,11 @@ public class MenuFrame {
                 new ProcessManagmentFrame ();
                 frame.dispose();
             }
+            else if(e.getActionCommand().equals("Memory Management")){
+                new MemoryManagmentFrame();
+                frame.dispose();
+            }
             else if(e.getActionCommand().equals("Exit")){
-                new ProcessManagmentFrame ();
                 frame.dispose();
             }
         }
