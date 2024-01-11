@@ -17,9 +17,11 @@ public class MemoryManagmentFrame {
     private JLabel lenghtLabel;
     private JLabel stringLabel;
     private JButton LRUButton;
-    private JButton optimalAlgo;
+    private JButton FIFO;
     private JLabel pageFaultHeading;
     private String[] framesRecord;
+    private int frame = 0;
+
     MemoryManagmentFrame(){
 
         initGUI();
@@ -39,7 +41,7 @@ public class MemoryManagmentFrame {
         lenghtLabel = new JLabel ("No of String Lenght");
         stringLabel = new JLabel ("Reference String");
         LRUButton = new JButton ("LRU");
-        optimalAlgo = new JButton ("newButton");
+        FIFO = new JButton ("FIFO");
         pageFaultHeading = new JLabel ("Page ");
 
         Font f1=new Font("Arial",Font.BOLD,16);
@@ -53,7 +55,7 @@ public class MemoryManagmentFrame {
         mainPanel.add (lenghtLabel);
         mainPanel.add (stringLabel);
         mainPanel.add (LRUButton);
-        mainPanel.add (optimalAlgo);
+        mainPanel.add (FIFO);
         mainPanel.add (pageFaultHeading);
 
         noOfFramesInput.setBounds (230, 60, 100, 25);
@@ -63,7 +65,7 @@ public class MemoryManagmentFrame {
         lenghtLabel.setBounds (80, 90, 115, 25);
         stringLabel.setBounds (80, 120, 100, 25);
         LRUButton.setBounds (120, 175, 100, 25);
-        optimalAlgo.setBounds (245, 175, 100, 25);
+        FIFO.setBounds (245, 175, 100, 25);
         pageFaultHeading.setBounds (130, 210, 390, 35);
 
 //        mainPanel.add(displaySchedulingProcesses(schedulingQueue));
@@ -74,73 +76,115 @@ public class MemoryManagmentFrame {
 
 
         LRUButton.addActionListener(new ActionListener() {
+
+
             @Override
             public void actionPerformed(ActionEvent e) {
 
             if(isFormValid()) {
 //                performFIFO();
-
+                frame=0;
                 performLRU();
             }
             }
 
-            private void performLRU() {
+            class LRU{
+                private final LinkedHashMap<Integer, Integer> cache;
+                private final int capacity;
 
-                class LRUCache {
-                    private final LinkedHashMap<Integer, Integer> cache;
-                    private final int capacity;
-
-                    public LRUCache(int capacity) {
-                        this.capacity = capacity;
-                        this.cache = new LinkedHashMap<>(capacity, 0.75f, true);
+                public LRU(int capacity) {
+                    this.capacity = capacity;
+                    this.cache = new LinkedHashMap<>(capacity, 0.75f, true);
+                    for(int i=0;i<capacity;i++){
+                        this.cache.put(-1,i);
+                        JOptionPane.showMessageDialog(null,i);
                     }
 
-                    public boolean referencePage(int page) {
-                        if (cache.containsKey(page)) {
-                            // Page is already in the cache, move it to the front (most recently used)
-                            cache.remove(page);
-                            cache.put(page, 0);
-                            return true;
-                        }
+                }
 
-                        if (cache.size() >= capacity) {
-                            // Cache is full, remove the least recently used page
-                            Iterator<Map.Entry<Integer, Integer>> iterator = cache.entrySet().iterator();
-                            iterator.next();
-                            iterator.remove();
-                        }
-
-                        // Add the new page to the cache
+                public boolean referencePage(int page) {
+                    if (cache.containsKey(page)) {
+                        // Page is already in the cache, move it to the front (most recently used)
+                        cache.remove(page);
                         cache.put(page, 0);
-                        return false;
+                        return true;
                     }
 
-                    public void printFrames() {
-                        System.out.print("Frames: ");
-                        for (int key : cache.keySet()) {
-                            System.out.print(key + " ");
-                        }
-                        System.out.println();
+                    if (cache.size() >= capacity) {
+                        // Cache is full, remove the least recently used page
+                        Iterator<Map.Entry<Integer, Integer>> iterator = cache.entrySet().iterator();
+                        iterator.next();
+                        iterator.remove();
+                    }
+
+                    // Add the new page to the cache
+                    cache.put(page, 0);
+                    return false;
+                }
+
+                public void printFrames(int fault) {
+                    System.out.print("Frames: ");
+                    for (int key : cache.keySet()) {
+                        framesRecord[frame] += key + ",";
+                        System.out.print(key + " ");
+                    }
+                    framesRecord[frame] += fault + ",";
+                    frame++;
+                }
+
+                void print(){
+                    for (String a:framesRecord){
+                        System.out.println(a);
                     }
                 }
-                LRUCache lruCache = new LRUCache(Integer.parseInt(noOfFramesInput.getText()));
+            }
+
+
+            private void performLRU() {
+
+                int capacity = Integer.parseInt(noOfFramesInput.getText().trim());
+                String[] references = stringInput.getText().split("\\s+");
+                framesRecord = new String[references.length];
+                LRU lruCache = new LRU(capacity);
 
                 int pageFaults = 0;
-                String[] references = stringInput.getText().split("\\s+");
                 for (String reference : references) {
                     int page = Integer.parseInt(reference);
+                    framesRecord[frame]+=reference;
+                    framesRecord[frame]+=",";
                     if (!lruCache.referencePage(page)) {
                         pageFaults++;
                     }
-                    lruCache.printFrames();
+                    lruCache.printFrames(pageFaults);
+                    System.out.println();
                 }
 
-                System.out.println("The number of page faults using LRU are: " + pageFaults);
+                System.out.println("The total number of page faults using LRU is: " + pageFaults);
+                lruCache.print();
+
+                pageFaultHeading.setText("The number of page faults using FIFO are: " + pageFaults);
+                pageFaultHeading.setVisible(true);
+                mainPanel.add(displayLRUFrames());
+                mainPanel.repaint();
+                mainPanel.validate();
+
             }
 
 
         });
+
+        FIFO.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isFormValid()) {
+                performFIFO();
+
+                }
+            }
+        });
     }
+
+
 
     private boolean isFormValid() {
 
@@ -169,8 +213,6 @@ public class MemoryManagmentFrame {
         int[] rs, p;
 
         m = Integer.parseInt(noOfFramesInput.getText().trim());
-
-
 
 
         String[] inputStrings = stringInput.getText().split("\\s+");
@@ -243,6 +285,46 @@ public class MemoryManagmentFrame {
     }
 
     private JScrollPane displayFIFOFrames() {
+
+        for (String a:framesRecord){
+            System.out.println(a);
+        }
+
+        DefaultTableModel model=new DefaultTableModel();
+        JTable table=new JTable(model);
+        JScrollPane scrollBar=new JScrollPane(table);
+
+        scrollBar.setBounds(20,250,820,310);
+        model.addColumn("Ref String");
+
+        for (int i=0;i<Integer.parseInt(noOfFramesInput.getText().trim());i++){
+            model.addColumn("Frame "+i);
+        }
+        model.addColumn("Fault No");
+
+
+        for (String eachFrame:framesRecord) {
+//            JOptionPane.showMessageDialog(null,eachFrame);
+            Vector<String> row = new Vector<>();
+            String temp="";
+            for(int j=4;j<eachFrame.length();j++) {
+                if(String.valueOf(eachFrame.charAt(j)).equals(",")){
+                    row.add(temp);
+                    temp="";
+                }
+                else{
+                    temp+=String.valueOf(eachFrame.charAt(j));
+                }
+            }
+            model.addRow(row);
+
+        }
+
+
+        return scrollBar;
+    }
+
+    private JScrollPane displayLRUFrames() {
 
         for (String a:framesRecord){
             System.out.println(a);

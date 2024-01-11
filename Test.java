@@ -1,6 +1,8 @@
 import java.util.*;
 
 public class Test {
+    static String[] framesRecord;
+    static int frame = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -13,18 +15,20 @@ public class Test {
         System.out.print("Enter the reference string (space-separated numbers): ");
         scanner.nextLine(); // Consume the newline character
         String[] references = scanner.nextLine().split("\\s+");
+        framesRecord = new String[references.length];
 
         int pageFaults = 0;
-
         for (String reference : references) {
             int page = Integer.parseInt(reference);
             if (!lruCache.referencePage(page)) {
                 pageFaults++;
             }
-            lruCache.printFrames();
+            lruCache.printFrames(pageFaults);
+            System.out.println();
         }
 
-        System.out.println("The number of page faults using LRU are: " + pageFaults);
+        System.out.println("The total number of page faults using LRU is: " + pageFaults);
+        lruCache.print();
     }
 
     static class LRUCache {
@@ -56,12 +60,20 @@ public class Test {
             return false;
         }
 
-        public void printFrames() {
+        public void printFrames(int fault) {
             System.out.print("Frames: ");
             for (int key : cache.keySet()) {
+                framesRecord[frame] += key + ",";
                 System.out.print(key + " ");
             }
-            System.out.println();
+            framesRecord[frame] += fault + ",";
+            frame++;
+        }
+
+        void print(){
+            for (String a:framesRecord){
+                System.out.println(a);
+            }
         }
     }
 }
