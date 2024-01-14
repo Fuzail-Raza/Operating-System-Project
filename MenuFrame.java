@@ -72,7 +72,7 @@ public class MenuFrame {
     ActionListener buttonListner=new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Process Management")){
-/                  new ProcessManagmentFrame ();
+                new ProcessManagmentFrame ();
                 frame.dispose();
             }
             else if(e.getActionCommand().equals("Memory Management")){
