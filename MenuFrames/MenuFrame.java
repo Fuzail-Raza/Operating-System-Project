@@ -4,6 +4,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import MemoryManagment.MemoryManagmentFrame;
+import MemoryManagment.SelectionFrame;
 import ProcessManagmentFrame.ProcessManagmentFrame;
 public class MenuFrame {
     private JFrame frame;
@@ -79,7 +80,7 @@ public class MenuFrame {
                 frame.dispose();
             }
             else if(e.getActionCommand().equals("Memory Management")){
-                new MemoryManagmentFrame();
+                new SelectionFrame();
                 frame.dispose();
             }
             else if(e.getActionCommand().equals("Exit")){

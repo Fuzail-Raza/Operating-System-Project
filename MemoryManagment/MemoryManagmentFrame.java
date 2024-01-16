@@ -91,7 +91,7 @@ public class MemoryManagmentFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                new MenuFrame();
+                new SelectionFrame();
             }
         });
 
@@ -130,115 +130,8 @@ public class MemoryManagmentFrame {
                 mainPanel.validate();
 
 
-
-//                performFIFO();
-//                int faults=0;
-//                frame=0;
-//
-//                pageFaultHeading.setText("The number of page faults using LRU are: " + faults);
-//
-//                pageFaultHeading.setVisible(true);
-//                mainPanel.add(displayLRUFrames());
-//                mainPanel.repaint();
-//                mainPanel.validate();
-//                performLRU();
             }
             }
-
-                                                                                                                                            //            class LRU{
-                                                                                                                                            //                private final LinkedHashMap<Integer, Integer> cache;
-                                                                                                                                            //                private final int capacity;
-                                                                                                                                            //
-                                                                                                                                            //                public LRU(int capacity) {
-                                                                                                                                            //                    this.capacity = capacity;
-                                                                                                                                            //                    this.cache = new LinkedHashMap<>(capacity);
-                                                                                                                                            ////                    for(int i=0;i<capacity;i++){
-                                                                                                                                            ////                        this.cache.put(-1,i);
-                                                                                                                                            ////                        JOptionPane.showMessageDialog(null,i);
-                                                                                                                                            ////                    }
-                                                                                                                                            //
-                                                                                                                                            //                }
-                                                                                                                                            //
-                                                                                                                                            //                public boolean referencePage(int page) {
-                                                                                                                                            //                    if (cache.containsKey(page)) {
-                                                                                                                                            //                        // Page is already in the cache, move it to the front (most recently used)
-                                                                                                                                            //                        cache.remove(page);
-                                                                                                                                            //                        cache.put(page, 0);
-                                                                                                                                            //                        return true;
-                                                                                                                                            //                    }
-                                                                                                                                            //
-                                                                                                                                            //                    if (cache.size() >= capacity) {
-                                                                                                                                            //                        // Cache is full, remove the least recently used page
-                                                                                                                                            //                        Iterator<Map.Entry<Integer, Integer>> iterator = cache.entrySet().iterator();
-                                                                                                                                            //                        iterator.next();
-                                                                                                                                            //                        iterator.remove();
-                                                                                                                                            //                    }
-                                                                                                                                            //
-                                                                                                                                            //                    // Add the new page to the cache
-                                                                                                                                            //                    cache.put(page, 0);
-                                                                                                                                            //                    return false;
-                                                                                                                                            //                }
-                                                                                                                                            //
-                                                                                                                                            //                public void printFrames(int fault,Boolean isPageFault) {
-                                                                                                                                            //                    System.out.print("Frames: ");
-                                                                                                                                            //                    int i=0;
-                                                                                                                                            //                    for (int key : cache.keySet()) {
-                                                                                                                                            //                        framesRecord[frame] += key + ",";
-                                                                                                                                            //                        System.out.print(key + " ");
-                                                                                                                                            //                        i++;
-                                                                                                                                            //
-                                                                                                                                            //                    }
-                                                                                                                                            //                    while(i<capacity){
-                                                                                                                                            //                        framesRecord[frame] += -1 + ",";
-                                                                                                                                            //                        System.out.print(-1 + " ");
-                                                                                                                                            //                        i++;
-                                                                                                                                            //                    }
-                                                                                                                                            //                    if(isPageFault) {
-                                                                                                                                            //                        framesRecord[frame] += fault + ",";
-                                                                                                                                            //                    }
-                                                                                                                                            //                    frame++;
-                                                                                                                                            //
-                                                                                                                                            //                }
-                                                                                                                                            //
-                                                                                                                                            //                void print(){
-                                                                                                                                            //                    for (String a:framesRecord){
-                                                                                                                                            //                        System.out.println(a);
-                                                                                                                                            //                    }
-                                                                                                                                            //                }
-                                                                                                                                            //            }
-                                                                                                                                            //
-                                                                                                                                            //
-                                                                                                                                            //            private void performLRU() {
-                                                                                                                                            //
-                                                                                                                                            //                int capacity = Integer.parseInt(noOfFramesInput.getText().trim());
-                                                                                                                                            //                String[] references = stringInput.getText().split("\\s+");
-                                                                                                                                            //                framesRecord = new String[references.length];
-                                                                                                                                            //                LRU lruCache = new LRU(capacity);
-                                                                                                                                            //
-                                                                                                                                            //                int pageFaults = 0;
-                                                                                                                                            //                for (String reference : references) {
-                                                                                                                                            //                    Boolean isFaultOccurs=false;
-                                                                                                                                            //                    int page = Integer.parseInt(reference);
-                                                                                                                                            //                    framesRecord[frame]+=reference;
-                                                                                                                                            //                    framesRecord[frame]+=",";
-                                                                                                                                            //                    if (!lruCache.referencePage(page)) {
-                                                                                                                                            //                        isFaultOccurs=true;
-                                                                                                                                            //                        pageFaults++;
-                                                                                                                                            //                    }
-                                                                                                                                            //                    lruCache.printFrames(pageFaults,isFaultOccurs);
-                                                                                                                                            //                    System.out.println();
-                                                                                                                                            //                }
-                                                                                                                                            //
-                                                                                                                                            //                pageFaultHeading.setText("The number of page faults using LRU are: " + pageFaults);
-                                                                                                                                            //                lruCache.print();
-                                                                                                                                            //
-                                                                                                                                            //                pageFaultHeading.setVisible(true);
-                                                                                                                                            //                mainPanel.add(displayLRUFrames());
-                                                                                                                                            //                mainPanel.repaint();
-                                                                                                                                            //                mainPanel.validate();
-                                                                                                                                            //
-                                                                                                                                            //            }
-
 
         });
 
