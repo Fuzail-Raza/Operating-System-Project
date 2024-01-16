@@ -1,6 +1,9 @@
+package MenuFrames;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import MemoryManagment.MemoryManagmentFrame;
 import ProcessManagmentFrame.ProcessManagmentFrame;
 public class MenuFrame {
     private JFrame frame;

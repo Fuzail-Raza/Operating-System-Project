@@ -1,3 +1,6 @@
+package MemoryManagment;
+
+import MenuFrames.MenuFrame;
 import ProcessManagmentFrame.ProcessManagmentFrame;
 
 import javax.swing.*;
@@ -29,7 +32,7 @@ public class MemoryManagmentFrame {
     private String[] framesRecord;
     private int frame = 0;
 
-    MemoryManagmentFrame(){
+    public MemoryManagmentFrame(){
 
         initGUI();
 

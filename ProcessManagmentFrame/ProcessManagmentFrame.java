@@ -1,15 +1,14 @@
 package ProcessManagmentFrame;
 
+import MenuFrames.MenuFrame;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.util.Queue;
+import java.util.*;
+
 public class ProcessManagmentFrame  {
 
     private JButton createProcessButton;
@@ -17,7 +16,7 @@ public class ProcessManagmentFrame  {
     private JPanel mainPanel;
     private JButton destroyProcessButton;
     private JButton suspendProcessButton;
-    private JButton processCommunicationWithOtherProcessesButton;
+    private JButton ProcessScheduling;
     private JButton resumeProcessButton;
     private JButton blockProcessButton;
     private JButton changeProcessPriorityButton;
@@ -31,6 +30,7 @@ public class ProcessManagmentFrame  {
     private JLabel numberOfProcesses;
     private JTextField numberOfProcessInput;
     private JButton create;
+    private JButton backButtonMenu;
     private JLabel processesArrivalTime;
     private JLabel processesBurstTime;
     private JLabel processesPriority;
@@ -44,7 +44,7 @@ public class ProcessManagmentFrame  {
     private JButton next;
     ArrayList<Process> processes = new ArrayList<>();
     ArrayList<Process> schedulingQueue = new ArrayList<>();
-
+    private Process runningProcess;
     ///For Suspend Process
 
     private JLabel suspendInputLabel;
@@ -64,8 +64,6 @@ public class ProcessManagmentFrame  {
     /// For Scheduling Panel
 
     private JButton fcfsButton;
-    private JButton roundRobinButton;
-    private JButton priorityButton;
     private JButton sjfButton;
     private JButton backButton;
 
@@ -75,9 +73,7 @@ public class ProcessManagmentFrame  {
         private final int arrivalTime;
         private final int burstTime;
         private String status;
-        private String ownerOfProcess;
         private int priority;
-        private int processor;
         private int ct;
         private int wt;
         private int tat;
@@ -89,8 +85,6 @@ public class ProcessManagmentFrame  {
             this.burstTime = burstTime;
             this.status="Ready";
             this.priority=priority;
-            this.processor=0;
-            this.ownerOfProcess="null";
             this.ct=-1;
             this.wt=-1;
             this.tat=-1;
@@ -100,7 +94,7 @@ public class ProcessManagmentFrame  {
     }
 
     public ProcessManagmentFrame () {
-        initiallize();
+//        initiallize();
         initGUI();
     }
 
@@ -241,13 +235,14 @@ public class ProcessManagmentFrame  {
         createProcessButton = new JButton("Create a process");
         destroyProcessButton = new JButton("Destroy a process");
         suspendProcessButton = new JButton("Suspend a Process");
-        processCommunicationWithOtherProcessesButton = new JButton("Process communication with other Processes");
+        ProcessScheduling = new JButton("Process Scheduling");
         resumeProcessButton = new JButton("Resume a Process");
         blockProcessButton = new JButton("Block a Process");
         changeProcessPriorityButton = new JButton("Change process Priority");
         dispatchProcessButton = new JButton("Dispatch a Process");
         wakeupProcessButton = new JButton("Wakeup a Process");
         displayProcessButton=new JButton("Display Processes");
+        backButtonMenu=new JButton("Main Menu");
 
         heading = new JLabel("Operating System");
         Font boldFont = new Font(heading.getFont().getName(), Font.BOLD, 28);
@@ -259,20 +254,21 @@ public class ProcessManagmentFrame  {
         temp.add(createProcessButton);
         temp.add(destroyProcessButton);
         temp.add(suspendProcessButton);
-        temp.add(processCommunicationWithOtherProcessesButton);
+        temp.add(ProcessScheduling);
         temp.add(resumeProcessButton);
         temp.add(blockProcessButton);
         temp.add(changeProcessPriorityButton);
         temp.add(dispatchProcessButton);
         temp.add(wakeupProcessButton);
         temp.add(displayProcessButton);
+        temp.add(backButtonMenu);
         temp.add(heading);
 
 
         createProcessButton.setBounds(80, 100, 170, 45);
         destroyProcessButton.setBounds(300, 100, 170, 45);
         suspendProcessButton.setBounds(80, 170, 170, 45);
-        processCommunicationWithOtherProcessesButton.setBounds(225, 310, 335, 50);
+        ProcessScheduling.setBounds(225, 310, 250, 50);
         resumeProcessButton.setBounds(510, 100, 170, 45);
         blockProcessButton.setBounds(300, 170, 170, 45);
         changeProcessPriorityButton.setBounds(515, 170, 170, 45);
@@ -280,6 +276,15 @@ public class ProcessManagmentFrame  {
         wakeupProcessButton.setBounds(300, 240, 170, 45);
         displayProcessButton.setBounds(515,240,170,45);
         heading.setBounds(245, 20, 305, 50);
+        backButtonMenu.setBounds(490,310,150,50);
+
+        backButtonMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new MenuFrame();
+            }
+        });
 
         createProcessButton.addActionListener(new ActionListener() {
             @Override
@@ -377,7 +382,7 @@ public class ProcessManagmentFrame  {
         });
 
 
-        processCommunicationWithOtherProcessesButton.addActionListener(new ActionListener() {
+        ProcessScheduling.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 schedulingQueue=new ArrayList<>();
@@ -510,25 +515,19 @@ public class ProcessManagmentFrame  {
         JPanel temp=new JPanel(null);
 
         fcfsButton = new JButton ("FCFS");
-        roundRobinButton = new JButton ("Round Robin");
-        priorityButton = new JButton ("Priority");
         sjfButton = new JButton ("SJF");
         backButton = new JButton ("Back");
 
         temp.add (fcfsButton);
-        temp.add (roundRobinButton);
-        temp.add (priorityButton);
+
         temp.add (sjfButton);
         temp.add (backButton);
 
         fcfsButton.setBounds (110, 60, 120, 30);
-        roundRobinButton.setBounds (240, 60, 120, 30);
-        priorityButton.setBounds (370, 60, 120, 30);
         sjfButton.setBounds (500, 60, 120, 30);
         backButton.setBounds (255, 100, 225, 30);
 
         temp.add(displaySchedulingProcesses(schedulingQueue));
-//        temp.add(displaySchedulingProcesses(processes));
 
 
         backButton.addActionListener(new ActionListener() {
@@ -561,7 +560,7 @@ public class ProcessManagmentFrame  {
                 if (result == JOptionPane.YES_OPTION) {
                     t=performSJF();
                 } else {
-                    t=performSJFPermitive();
+                    t=performSJFPreemptive();
                 }
                 if(t==null){
                     JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
@@ -571,37 +570,59 @@ public class ProcessManagmentFrame  {
             }
         });
 
-        priorityButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<Process> t = new ArrayList<>();
-                t=performPriorityAlgo();
-                if(t==null){
-                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
-                }else {
-                    temp.add(displaySchedulingProcesses(t));
-                }
-            }
-        });
 
-        roundRobinButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<Process> t = new ArrayList<>();
-                t=performRoundRobin();
-                if(t==null){
-                    JOptionPane.showMessageDialog(mainPanel,"No Proceses To Schdule","Empty Processes",JOptionPane.ERROR_MESSAGE);
-                }else {
-                    temp.add(displaySchedulingProcesses(t));
-                }
-            }
-        });
         return temp;
     }
 
-    private ArrayList<Process> performSJFPermitive() {
-        return null;
+    private ArrayList<Process> performSJFPreemptive() {
+        ArrayList<Process> temp = new ArrayList<>(processes);
+
+        int currentTime = 0;
+        int completedProcesses = 0;
+
+        while (completedProcesses < temp.size()) {
+            Process shortestRemainingTimeProcess = getShortestRemainingTimeProcess(temp, currentTime);
+
+            if (shortestRemainingTimeProcess != null) {
+                // Update the running process
+                if (runningProcess == null || shortestRemainingTimeProcess.remainingTime < runningProcess.remainingTime) {
+                    if (runningProcess != null) {
+                        temp.add(runningProcess);  // Add the previous running process back to the list
+                    }
+                    runningProcess = temp.remove(temp.indexOf(shortestRemainingTimeProcess));
+                }
+
+                runningProcess.remainingTime--;
+
+                if (runningProcess.remainingTime == 0) {
+                    runningProcess.ct = currentTime + 1;
+                    runningProcess.tat = runningProcess.ct - runningProcess.arrivalTime;
+                    runningProcess.wt = runningProcess.tat - runningProcess.burstTime;
+                    completedProcesses++;
+                    runningProcess = null;  // No process is currently running
+                }
+            }
+
+            currentTime++;
+        }
+
+        return processes;
     }
+
+    private Process getShortestRemainingTimeProcess(ArrayList<Process> processes, int currentTime) {
+        Process shortestProcess = null;
+
+        for (Process process : processes) {
+            if (process.arrivalTime <= currentTime && process.remainingTime > 0) {
+                if (shortestProcess == null || process.remainingTime < shortestProcess.remainingTime) {
+                    shortestProcess = process;
+                }
+            }
+        }
+
+        return shortestProcess;
+    }
+
 
     private ArrayList<Process> performRoundRobin() {
         ArrayList<Process> temp = new ArrayList<>(processes);
@@ -636,7 +657,6 @@ public class ProcessManagmentFrame  {
 //todo Changes Processes array to schedulingqueue to chedule only running processes
     private ArrayList<Process> performPriorityAlgo() {
         ArrayList<Process> temp=processes;
-//        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
 
         for (int i = 0; i < temp.size(); i++) {
             for (int j = 0; j < temp.size() - i - 1; j++) {
@@ -696,7 +716,6 @@ public class ProcessManagmentFrame  {
     private ArrayList<Process> performFCFS() {
 
         ArrayList<Process> temp=schedulingQueue;
-//        temp.sort((p1, p2) -> Integer.compare(p1.arrivalTime, p2.burstTime));
 
         for (int i = 0; i < temp.size(); i++) {
             for (int j = 0; j < temp.size() - i - 1; j++) {
