@@ -88,13 +88,13 @@ public class ProcessManagmentFrame  {
             this.ct=-1;
             this.wt=-1;
             this.tat=-1;
-            this.remainingTime=-1;
+            this.remainingTime=burstTime;
 
         }
     }
 
     public ProcessManagmentFrame () {
-//        initiallize();
+        initiallize();
         initGUI();
     }
 
@@ -575,118 +575,54 @@ public class ProcessManagmentFrame  {
     }
 
     private ArrayList<Process> performSJFPreemptive() {
-        ArrayList<Process> temp = new ArrayList<>(processes);
 
+        ArrayList<Process> temp=schedulingQueue;
+        temp.sort(Comparator.comparingInt(p -> p.arrivalTime));
+
+        boolean[] completed = new boolean[temp.size()];
         int currentTime = 0;
-        int completedProcesses = 0;
+        int completedCount = 0;
 
-        while (completedProcesses < temp.size()) {
-            Process shortestRemainingTimeProcess = getShortestRemainingTimeProcess(temp, currentTime);
-
-            if (shortestRemainingTimeProcess != null) {
-                // Update the running process
-                if (runningProcess == null || shortestRemainingTimeProcess.remainingTime < runningProcess.remainingTime) {
-                    if (runningProcess != null) {
-                        temp.add(runningProcess);  // Add the previous running process back to the list
-                    }
-                    runningProcess = temp.remove(temp.indexOf(shortestRemainingTimeProcess));
-                }
-
-                runningProcess.remainingTime--;
-
-                if (runningProcess.remainingTime == 0) {
-                    runningProcess.ct = currentTime + 1;
-                    runningProcess.tat = runningProcess.ct - runningProcess.arrivalTime;
-                    runningProcess.wt = runningProcess.tat - runningProcess.burstTime;
-                    completedProcesses++;
-                    runningProcess = null;  // No process is currently running
-                }
-            }
-
-            currentTime++;
-        }
-
-        return processes;
-    }
-
-    private Process getShortestRemainingTimeProcess(ArrayList<Process> processes, int currentTime) {
-        Process shortestProcess = null;
-
-        for (Process process : processes) {
-            if (process.arrivalTime <= currentTime && process.remainingTime > 0) {
-                if (shortestProcess == null || process.remainingTime < shortestProcess.remainingTime) {
-                    shortestProcess = process;
-                }
-            }
-        }
-
-        return shortestProcess;
-    }
+        while (completedCount != temp.size()) {
+            int shortest = -1;
 
 
-    private ArrayList<Process> performRoundRobin() {
-        ArrayList<Process> temp = new ArrayList<>(processes);
 
-        int timeQuantum = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter Quantum for Processes", "0", JOptionPane.INFORMATION_MESSAGE));
-        Queue<Process> q = new LinkedList<>();
-        int currentTime = 0;
-        int remainingProcesses = temp.size();
+            int shortestBurst = Integer.MAX_VALUE;
 
-        for (int i = 0; i < temp.size(); i++) {
-            temp.get(i).remainingTime = temp.get(i).burstTime;
-        }
-
-        while (remainingProcesses > 0) {
             for (int i = 0; i < temp.size(); i++) {
-                if (temp.get(i).arrivalTime <= currentTime && temp.get(i).remainingTime > 0) {
-                    int executionTime = Math.min(temp.get(i).remainingTime, timeQuantum);
-                    temp.get(i).remainingTime -= executionTime;
-                    currentTime += executionTime;
-                    if (temp.get(i).remainingTime == 0) {
-                        remainingProcesses--;
-                        temp.get(i).ct = currentTime;
-                        temp.get(i).tat = temp.get(i).ct - temp.get(i).arrivalTime;
-                        temp.get(i).wt = temp.get(i).tat - temp.get(i).burstTime;
-                    }
-                    q.add(temp.get(i));
+                if (!completed[i] && temp.get(i).arrivalTime <= currentTime && temp.get(i).remainingTime < shortestBurst) {
+                    shortestBurst = temp.get(i).remainingTime;
+                    shortest = i;
                 }
             }
-        }
-        return temp;
-    }
-//todo Changes Processes array to schedulingqueue to chedule only running processes
-    private ArrayList<Process> performPriorityAlgo() {
-        ArrayList<Process> temp=processes;
 
-        for (int i = 0; i < temp.size(); i++) {
-            for (int j = 0; j < temp.size() - i - 1; j++) {
-                if (processes.get(j).priority > processes.get(j + 1).priority) {
-                    // Swap processes
-                    Process tem = processes.get(j);
-                    processes.set(j, processes.get(j + 1));
-                    processes.set(j + 1, tem);
+            if (shortest == -1) {
+                currentTime++;
+            } else {
+                temp.get(shortest).remainingTime--;
+
+                if (temp.get(shortest).remainingTime == 0) {
+                    temp.get(shortest).ct = currentTime + 1;
+                    temp.get(shortest).tat = temp.get(shortest).ct - temp.get(shortest).arrivalTime;
+                    temp.get(shortest).wt = temp.get(shortest).tat - temp.get(shortest).burstTime;
+
+                    completed[shortest] = true;
+                    completedCount++;
                 }
+
+                currentTime++;
             }
         }
-
-        int sum = 0;
-        for (Process process : processes) {
-            if (sum < process.arrivalTime) {
-                sum = process.arrivalTime;
-            }
-            sum += process.burstTime;
-            process.ct = sum;
-            process.tat = process.ct - process.arrivalTime;
-            process.wt = process.tat - process.burstTime;
-        }
-
+        temp.sort(Comparator.comparingInt(p -> p.id));
 
         return temp;
-
     }
+
+
 
     private ArrayList<Process> performSJF() {
-        ArrayList<Process> temp=processes;
+        ArrayList<Process> temp=schedulingQueue;
 
         for (int i = 0; i < temp.size(); i++) {
             for (int j = 0; j < temp.size() - i - 1; j++) {
@@ -1029,10 +965,27 @@ public class ProcessManagmentFrame  {
 
     }
     void initiallize(){
-        for (int j = 0; j < 6; j++) {
-            processes.add(new Process(ids++, j + 2,
-                    j + 4,0));
-        }
+//        for (int j = 0; j < 6; j++) {
+//            processes.add(new Process(ids++, j + 2,
+//                    j + 4,0));
+//        }
+        processes.add(new Process(ids++, 1,
+                1,0));
+                processes.add(new Process(ids++, 3,
+                    2,0));
+                        processes.add(new Process(ids++, 2,
+                    1,0));
+                                processes.add(new Process(ids++, 0,
+                    4,0));
+
+//        processes.add(new Process(ids++, 0,
+//                1,0));
+//        processes.add(new Process(ids++, 0,
+//                2,0));
+//        processes.add(new Process(ids++, 0,
+//                1,0));
+//        processes.add(new Process(ids++, 0,
+//                4,0));
 
     }
     void print(){

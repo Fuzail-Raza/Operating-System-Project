@@ -57,7 +57,8 @@ public class SelectionFrame {
         pagginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainFrame,"Pagging");
+                mainFrame.dispose();
+                new Pagging();
             }
         });
         backButton.addActionListener(new ActionListener() {

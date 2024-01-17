@@ -17,10 +17,8 @@ public class MemoryManagmentFrame {
     private JFrame mainFrame;
     private JPanel mainPanel;
     private JTextField noOfFramesInput;
-    private JTextField lengthInput;
     private JTextField stringInput;
     private JLabel noOfFramesLabel;
-    private JLabel lenghtLabel;
     private JLabel stringLabel;
     private JButton LRUButton;
     private JButton FIFO;
@@ -45,10 +43,8 @@ public class MemoryManagmentFrame {
         mainPanel=new JPanel(null);
 
         noOfFramesInput = new JTextField (5);
-        lengthInput = new JTextField (5);
         stringInput = new JTextField (5);
         noOfFramesLabel = new JLabel ("No of Frames");
-        lenghtLabel = new JLabel ("No of String Lenght");
         stringLabel = new JLabel ("Reference String");
         LRUButton = new JButton ("LRU");
         FIFO = new JButton ("FIFO");
@@ -60,10 +56,8 @@ public class MemoryManagmentFrame {
         pageFaultHeading.setVisible(false);
 
         mainPanel.add (noOfFramesInput);
-        mainPanel.add (lengthInput);
         mainPanel.add (stringInput);
         mainPanel.add (noOfFramesLabel);
-        mainPanel.add (lenghtLabel);
         mainPanel.add (stringLabel);
         mainPanel.add (LRUButton);
         mainPanel.add (FIFO);
@@ -71,10 +65,8 @@ public class MemoryManagmentFrame {
         mainPanel.add(backButton);
 
         noOfFramesInput.setBounds (230, 60, 100, 25);
-        lengthInput.setBounds (230, 90, 100, 25);
         stringInput.setBounds (230, 120, 200, 25);
         noOfFramesLabel.setBounds (80, 60, 100, 25);
-        lenghtLabel.setBounds (80, 90, 115, 25);
         stringLabel.setBounds (80, 120, 100, 25);
         LRUButton.setBounds (120, 175, 100, 25);
         FIFO.setBounds (245, 175, 100, 25);
@@ -175,7 +167,6 @@ public class MemoryManagmentFrame {
 
         try{
             Integer.parseInt(noOfFramesInput.getText().trim());
-            Integer.parseInt(lengthInput.getText());
 
             String[] inputStrings = stringInput.getText().split("\\s+");
             int[] inputNumbers = new int[inputStrings.length];
@@ -192,82 +183,6 @@ public class MemoryManagmentFrame {
 
 
     }
-
-                                                                                    //    private void performFIFO() {
-                                                                                    //        int i = 0, j = 0, k = 0, il = 0, m, n, flag = 1;
-                                                                                    //        int[] rs, p;
-                                                                                    //
-                                                                                    //        m = Integer.parseInt(noOfFramesInput.getText().trim());
-                                                                                    //
-                                                                                    //
-                                                                                    //        String[] inputStrings = stringInput.getText().split("\\s+");
-                                                                                    //        int[] inputNumbers = new int[inputStrings.length];
-                                                                                    //
-                                                                                    ////                n = Integer.parseInt(lengthInput.getText());
-                                                                                    //        n = inputStrings.length;
-                                                                                    //
-                                                                                    //        rs = new int[n];
-                                                                                    //        p = new int[m];
-                                                                                    //
-                                                                                    //
-                                                                                    //        for (int l = 0; l < inputStrings.length; l++) {
-                                                                                    //            inputNumbers[l] = Integer.parseInt(inputStrings[l]);
-                                                                                    //        }
-                                                                                    //
-                                                                                    //
-                                                                                    //        for (i = 0; i < n; i++)
-                                                                                    //            rs[i] = inputNumbers[i];
-                                                                                    //
-                                                                                    //        for (i = 0; i < m; i++)
-                                                                                    //            p[i] = -1;
-                                                                                    //
-                                                                                    //        System.out.println("\tRef string\t\tPage frames");
-                                                                                    //
-                                                                                    //        framesRecord=new String[n];
-                                                                                    //        for (i = 0; i < n; i++) {
-                                                                                    //
-                                                                                    //            framesRecord[i]+=rs[i];
-                                                                                    //            framesRecord[i]+=",";
-                                                                                    //            System.out.print("\t" + rs[i] + "\t\t");
-                                                                                    //            flag = 1;
-                                                                                    //            for (j = 0; j < m; j++) {
-                                                                                    //                if (p[j] == rs[i]) {
-                                                                                    //                    flag = 0;
-                                                                                    //                    break;
-                                                                                    //                }
-                                                                                    //            }
-                                                                                    //
-                                                                                    //            if (flag == 1) {
-                                                                                    //                p[k] = rs[i];
-                                                                                    //                k++;
-                                                                                    //            }
-                                                                                    //
-                                                                                    //            for (j = 0; j < m; j++) {
-                                                                                    //                framesRecord[i] += p[j];
-                                                                                    //                framesRecord[i]+=",";
-                                                                                    //                System.out.print(p[j] + "\t");
-                                                                                    //            }
-                                                                                    //
-                                                                                    //            if (flag == 1) {
-                                                                                    //                il++;
-                                                                                    //                System.out.print("PF No. " + il);
-                                                                                    //                framesRecord[i]+=il;
-                                                                                    //                framesRecord[i]+=",";
-                                                                                    //            }
-                                                                                    //
-                                                                                    //            System.out.println();
-                                                                                    //
-                                                                                    //            if (k == m)
-                                                                                    //                k = 0;
-                                                                                    //        }
-                                                                                    //
-                                                                                    //        pageFaultHeading.setText("The number of page faults using FIFO are: " + il);
-                                                                                    //        pageFaultHeading.setVisible(true);
-                                                                                    //        System.out.println("The number of page faults using FIFO are: " + il);
-                                                                                    //        mainPanel.add(displayFIFOFrames());
-                                                                                    //        mainPanel.repaint();
-                                                                                    //        mainPanel.validate();
-                                                                                    //    }
 
     private JScrollPane displayFIFOFrames() {
 
